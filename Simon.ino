@@ -48,7 +48,7 @@ void loop() {
   roundScore++;
 }
 
-int addStack(){
+void addStack(){
   for(int j = 0; j < roundScore; j++){
     int myRandom = random(1, 5);
     stack.push(myRandom);
@@ -64,6 +64,25 @@ void readStack(){
   Serial.println("stack is now empty");
   lightAll();
   lightSoundOff();
+}
+
+
+void failInput(){
+  for(int i = 0; i < 2; i++){
+    digitalWrite(LIGHT_1, HIGH);
+    digitalWrite(LIGHT_2, HIGH);
+    digitalWrite(LIGHT_3, HIGH);
+    digitalWrite(LIGHT_4, HIGH);
+    tone(PIEZO, 2000); 
+    delay(500);
+
+    digitalWrite(LIGHT_1, LOW);
+    digitalWrite(LIGHT_2, LOW);
+    digitalWrite(LIGHT_3, LOW);
+    digitalWrite(LIGHT_4, LOW);
+    noTone(PIEZO);
+    delay(300);
+  }
 }
 
 
@@ -101,10 +120,22 @@ void lightSound(int x){
 
 
 void answer(){
-  
+  int button1state = digitalRead(BUTTON_1);
+  int button2state = digitalRead(BUTTON_2);
+  int button3state = digitalRead(BUTTON_3);
+  int button4state = digitalRead(BUTTON_4);
+
+  int compareItem = stack.pop();
+
+  if()
 
   
 }
+
+void buttonPressCheck(){
+
+}
+
 
 
 void lightSoundOff(){
