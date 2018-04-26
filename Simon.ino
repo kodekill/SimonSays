@@ -17,6 +17,8 @@ StackList<int> stack;
 int delayTime = 750;
 int MAX_ARRAY = 50;
 int myArray[50];
+int roundScore = 1;
+bool checkFlag = false;
 
 
 void setup() {
@@ -31,33 +33,37 @@ void setup() {
   pinMode(BUTTON_4, INPUT);
   
   Serial.begin(9600);
-    addStack();
+  randomSeed(analogRead(0));
+  stack.push(1);
+  stack.push(2);
+  stack.push(3);
 }
 
 
 void loop() {
-
   //addStack();
-  readStack();
+  //readStack();
+  answer();
 
+  roundScore++;
 }
 
 int addStack(){
-  
-  stack.push(1);
-  stack.push(2);
-  stack.push(3);
-
+  for(int j = 0; j < roundScore; j++){
+    int myRandom = random(1, 5);
+    stack.push(myRandom);
+  }
 }
 
 
 void readStack(){
-  if(stack.isEmpty()){
-    Serial.println("true");
+  while(!stack.isEmpty()){
+      int x = stack.pop();
+      lightSound(x);
   }
-  int x = stack.pop();
-  lightSound(x);
-
+  Serial.println("stack is now empty");
+  lightAll();
+  lightSoundOff();
 }
 
 
@@ -93,6 +99,14 @@ void lightSound(int x){
   } 
 }
 
+
+void answer(){
+  
+
+  
+}
+
+
 void lightSoundOff(){
   digitalWrite(LIGHT_1, LOW);
   digitalWrite(LIGHT_2, LOW);
@@ -102,6 +116,29 @@ void lightSoundOff(){
   noTone(PIEZO);
   delay(100);
 }
+
+
+void lightAll(){
+  digitalWrite(LIGHT_1, HIGH);
+  digitalWrite(LIGHT_2, HIGH);
+  digitalWrite(LIGHT_3, HIGH);
+  digitalWrite(LIGHT_4, HIGH);
+  delay(1000);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void test() {
   digitalWrite(LIGHT_1, HIGH);
