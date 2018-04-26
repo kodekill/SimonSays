@@ -9,7 +9,7 @@
 #define BUTTON_4 11  //Red
 
 #define PIEZO 12
-
+int delayTime = 750; 
 
 void setup() {
   pinMode(LIGHT_1, OUTPUT);
@@ -38,27 +38,38 @@ void loop() {
 
   if(button1state == HIGH){
     Serial.println("Button1 ON");
+    digitalWrite(LIGHT_1, LOW);
     tone(PIEZO, 8000);
+    delay(delayTime);
+    noTone(PIEZO);
   }
 
   
   if(button2state == HIGH){
     Serial.println("Button2 ON");
+    digitalWrite(LIGHT_2, LOW);
+    tone(PIEZO, 9000);
+    delay(delayTime);
+    noTone(PIEZO);
   }
 
   
   if(button3state == HIGH){
     Serial.println("Button3 ON");
+    digitalWrite(LIGHT_3, LOW);
+    tone(PIEZO, 10000);
+    delay(delayTime);
+    noTone(PIEZO);
   }
 
   
   if(button4state == HIGH){
     Serial.println("Button4 ON");
-  }
-
-
-  if((button1state && button2state && button3state && button4state) == LOW){
+    digitalWrite(LIGHT_4, LOW);
+    tone(PIEZO, 11000);
+    delay(delayTime);
     noTone(PIEZO);
   }
 
+   
 }
