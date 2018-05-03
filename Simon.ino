@@ -39,23 +39,27 @@ void setup() {
   
   Serial.begin(9600);
   randomSeed(analogRead(0));
-  stack.push(1);
-  stack.push(2);
-  stack.push(3);
-  successInput();
+  //stack.push(1);
+  //stack.push(2);
+  //stack.push(3);
+
+  //successInput();
 }
 
 void(* resetFunc) (void) = 0; //Reset
 
 void loop() {
   //Serial.println("\n\nLoop");
-  //addStack();
+  addStack();
   
   //Serial.println(stack.peek());
   //readStack();
 
-  //Serial.print("My input = ");
-  //Serial.println(input);
+  // Serial.print("Flag = ");
+  // Serial.println(checkFlag);
+  // if(checkFlag == 1){
+  //   Serial.println("checkFlag is True");
+  // }
 
   buttonPressCheck();
   while(checkFlag == true){
@@ -66,27 +70,47 @@ void loop() {
 }
 
 
+void addStack(){
+  for(int x = 0; x < roundScore; x++){
+    int myRandom = random(1,5);
+    lightSound(myRandom, 2);
+    stack.push(myRandom);
+    
+    // Serial.print("Pushing ");
+    // Serial.print(myRandom);
+    // Serial.println(" to the stack");
+    
+    copy = stack;
+    checkFlag = true;
+  }
+}
 
 
 
 void answer(){
-  int compareItem = stack.pop();
-  input = buttonPressCheck();
+  for(int x = 0; x < roundScore; x++){
+    int compareItem = stack.pop();
+    input = buttonPressCheck();
 
-  while(input != 0){
-    if(compareItem == input){
-      //Serial.println("You got it right"); 
-      checkFlag = false;
-      input = 0;
-      break;
+    while(input == 0){
+      input = buttonPressCheck(); //Loop to give user a chance to input his response
     }
-    if(compareItem != input){
-      //Serial.println("You got it wrong");
-      checkFlag = false;
-      input = 0;
-      failInput();
+
+    while(input != 0){
+      if(compareItem == input){
+        //Serial.println("You got it right"); 
+        checkFlag = false;
+        input = 0;
+        break;
+      }
+      if(compareItem != input){
+        //Serial.println("You got it wrong");
+        checkFlag = false;
+        input = 0;
+        failInput();
+        break;
+      }
     }
-    break;
   }
 }
 
@@ -150,15 +174,6 @@ int buttonPressCheck(){
 
 
 
-void addStack(){
-    int myRandom = random(1,5);
-    stack.push(myRandom);
-    Serial.print("Pushing ");
-    Serial.print(myRandom);
-    Serial.println(" to the stack");
-    copy = stack;
-    checkFlag = true;
-}
 
 
 void readStack(){
