@@ -1,20 +1,25 @@
-#include <StackList.h>
+#define PIEZO 2
 
-#define LIGHT_1 2    //Red
-#define LIGHT_2 3    //Yellow
-#define LIGHT_3 4    //White    //Green
-#define LIGHT_4 5    //Red      //Blue
+#define LIGHT_1 3    //Red
+#define LIGHT_2 5    //Blue
+#define LIGHT_3 6    //Yellow
+#define LIGHT_4 9    //Green
 
-#define BUTTON_1 8   //Red
-#define BUTTON_2 9   //Yellow
-#define BUTTON_3 10  //White    //Green
-#define BUTTON_4 11  //Red      //Blue
+#define BUTTON_1 4   //Red
+#define BUTTON_2 7   //Blue
+#define BUTTON_3 8   //Yellow
+#define BUTTON_4 10  //Green
 
-#define PIEZO 12
+#define PITCH_1 500   //Red
+#define PITCH_2 700   //Blue
+#define PITCH_3 900   //Yellow
+#define PITCH_4 1000  //Green
+#define FAIL_SOUND 250
 
-StackList<int> stack;
-StackList<int> Rstack; //read stack
-StackList<int> copy;
+#include <QueueArray.h>
+QueueArray <int> queue;
+QueueArray <int> myCopy;
+QueueArray <int> Rstack; //read stack
 
 int delayTime = 375;
 int MAX_ARRAY = 50;
@@ -24,7 +29,8 @@ int myCount = 0;    //Used for Stack Length
 int input = 0; 
 float mySpeed = 2;
 bool checkFlag = false;
-
+void(* resetFunc) (void) = 0; //Reset function
+int lightArray[] = {LIGHT_1, LIGHT_2, LIGHT_3, LIGHT_4};
 
 void setup() {
   pinMode(LIGHT_1, OUTPUT);
@@ -38,312 +44,15 @@ void setup() {
   pinMode(BUTTON_4, INPUT);
   
   Serial.begin(9600);
+  Serial.println("Starting....");
   randomSeed(analogRead(0));
-  //stack.push(1);
-  //stack.push(2);
-  //stack.push(3);
 
-  //successInput();
-}
-
-void(* resetFunc) (void) = 0; //Reset
-
-void loop() {
-  //Serial.println("\n\nLoop");
-  addStack();
-  
-  //Serial.println(stack.peek());
-  //readStack();
-
-  // Serial.print("Flag = ");
-  // Serial.println(checkFlag);
-  // if(checkFlag == 1){
-  //   Serial.println("checkFlag is True");
-  // }
-
-  buttonPressCheck();
-  while(checkFlag == true){
-    answer();
-  }
-
-  roundScore++;
+//  startLights();
+//  delay(750);
 }
 
 
-void addStack(){
-  for(int x = 0; x < roundScore; x++){
-    int myRandom = random(1,5);
-    lightSound(myRandom, 2);
-    stack.push(myRandom);
-    
-    // Serial.print("Pushing ");
-    // Serial.print(myRandom);
-    // Serial.println(" to the stack");
-    
-    copy = stack;
-    checkFlag = true;
-  }
+void loop(){
+  //mode1();
+  mode2();
 }
-
-
-
-void answer(){
-  for(int x = 0; x < roundScore; x++){
-    int compareItem = stack.pop();
-    input = buttonPressCheck();
-
-    while(input == 0){
-      input = buttonPressCheck(); //Loop to give user a chance to input his response
-    }
-
-    while(input != 0){
-      if(compareItem == input){
-        //Serial.println("You got it right"); 
-        checkFlag = false;
-        input = 0;
-        break;
-      }
-      if(compareItem != input){
-        //Serial.println("You got it wrong");
-        checkFlag = false;
-        input = 0;
-        failInput();
-        break;
-      }
-    }
-  }
-}
-
-
-int buttonPressCheck(){
-  int button1state = digitalRead(BUTTON_1);
-  int button2state = digitalRead(BUTTON_2);
-  int button3state = digitalRead(BUTTON_3);
-  int button4state = digitalRead(BUTTON_4);
-  mySpeed = 1.2; 
-
-  if(button1state == true){
-    lightSound(1, mySpeed);
-    input = 1;
-    checkFlag = true;
-  }
-  if(button2state == true){
-    lightSound(2, mySpeed);
-    input = 2;
-    checkFlag = true;
-  }
-  if(button3state == true){
-    lightSound(3, mySpeed);
-    input = 3;
-    checkFlag = true;
-  }  
-  if(button4state == true){
-    lightSound(4, mySpeed);
-    input = 4;
-    checkFlag = true;
-  }
-//  Serial.print("input = ");
-//  Serial.println(input);
-//  
-//  Serial.print("checkFlag = ");
-//  Serial.println(checkFlag);
-  
-  return input;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void readStack(){
-  Rstack = copy;
-  myCount = Rstack.count();
-  Serial.print("My stack size = ");
-  Serial.println(myCount);
-  
-  for(int i = 0; i < myCount; i++){
-      int x = Rstack.pop();
-      Serial.print("Popping ");
-      Serial.print(x);
-      Serial.println(" off");
-      lightSound(x, mySpeed);
-  }
-  Serial.println("stack is now empty");
-  lightAll();
-  lightSoundOff();
-}
-
-
-void failInput(){
-  for(int i = 0; i < 2; i++){
-    digitalWrite(LIGHT_1, HIGH);
-    digitalWrite(LIGHT_2, HIGH);
-    digitalWrite(LIGHT_3, HIGH);
-    digitalWrite(LIGHT_4, HIGH);
-    tone(PIEZO, 2000); 
-    delay(300);
-
-    digitalWrite(LIGHT_1, LOW);
-    digitalWrite(LIGHT_2, LOW);
-    digitalWrite(LIGHT_3, LOW);
-    digitalWrite(LIGHT_4, LOW);
-    noTone(PIEZO);
-    delay(150);
-  }
-  resetFunc();
-}
-
-
-void successInput(){
-  float mySpeed = .25;
-
-  for(int i = 1; i <= 4; i++){
-    lightSound(i, mySpeed);
-  }
-  for(int i = 3; i >= 2; i--){
-    lightSound(i, mySpeed);
-  }
-  lightSound(1, mySpeed*2.5);
-}
-
-
-void lightSound(int x, float mySpeed){
-  switch (x){
-    case 1:
-      digitalWrite(LIGHT_1, HIGH);
-      tone(PIEZO, 3000);
-      delay(delayTime * mySpeed);
-      lightSoundOff();
-      break;
-
-    case 2:
-      digitalWrite(LIGHT_2, HIGH);
-      tone(PIEZO, 4000);
-      delay(delayTime * mySpeed);
-      lightSoundOff();
-      break;
-
-    case 3:
-      digitalWrite(LIGHT_3, HIGH);
-      tone(PIEZO, 5000);
-      delay(delayTime * mySpeed);
-      lightSoundOff();
-      break;
-
-    case 4:
-      digitalWrite(LIGHT_4, HIGH);
-      tone(PIEZO, 6000);
-      delay(delayTime * mySpeed);
-      lightSoundOff();   
-      break;
-  } 
-}
-
-
-
-
-
-void lightSoundOff(){
-  digitalWrite(LIGHT_1, LOW);
-  digitalWrite(LIGHT_2, LOW);
-  digitalWrite(LIGHT_3, LOW);
-  digitalWrite(LIGHT_4, LOW);
-
-  noTone(PIEZO);
-  delay(100);
-}
-
-
-void lightAll(){
-  digitalWrite(LIGHT_1, HIGH);
-  digitalWrite(LIGHT_2, HIGH);
-  digitalWrite(LIGHT_3, HIGH);
-  digitalWrite(LIGHT_4, HIGH);
-  delay(1000);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void test() {
-  digitalWrite(LIGHT_1, HIGH);
-  digitalWrite(LIGHT_2, HIGH);
-  digitalWrite(LIGHT_3, HIGH);
-  digitalWrite(LIGHT_4, HIGH);
-
-  int button1state = digitalRead(BUTTON_1);
-  int button2state = digitalRead(BUTTON_2);
-  int button3state = digitalRead(BUTTON_3);
-  int button4state = digitalRead(BUTTON_4);
-
-  if(button1state == HIGH){
-    Serial.println("Button1 ON");
-    digitalWrite(LIGHT_1, LOW);
-    tone(PIEZO, 8000);
-    delay(delayTime);
-    noTone(PIEZO);
-  }
-
-  
-  if(button2state == HIGH){
-    Serial.println("Button2 ON");
-    digitalWrite(LIGHT_2, LOW);
-    tone(PIEZO, 9000);
-    delay(delayTime);
-    noTone(PIEZO);
-  }
-
-  
-  if(button3state == HIGH){
-    Serial.println("Button3 ON");
-    digitalWrite(LIGHT_3, LOW);
-    tone(PIEZO, 10000);
-    delay(delayTime);
-    noTone(PIEZO);
-  }
-
-  
-  if(button4state == HIGH){
-    Serial.println("Button4 ON");
-    digitalWrite(LIGHT_4, LOW);
-    tone(PIEZO, 11000);
-    delay(delayTime);
-    noTone(PIEZO);
-  }
-  
-}
-
-
-
