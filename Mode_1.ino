@@ -13,6 +13,7 @@ void mode1(){
   while(checkFlag == true){
     answer();
   }
+  queue.clear();
   roundScore++;
 }
 
@@ -24,8 +25,18 @@ void mode1(){
 void addStack1(){
   for(int x = 0; x < roundScore; x++){
     int myRandom = random(1,5);
-    lightSound(myRandom, mySpeed);
-    queue.push(myRandom);
-    checkFlag = true;
+    if(soundMode){
+      lightSound(myRandom, mySpeed);
+      queue.push_back(myRandom);
+      checkFlag = true;
+    }
+
+    if(!soundMode){
+      lightMute(myRandom, mySpeed);
+      queue.push_back(myRandom);
+      checkFlag = true;
+    }
   }
+
+  //printQueue();
 }

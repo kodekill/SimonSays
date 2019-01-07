@@ -1,49 +1,32 @@
+/**
+ * Mode 2 appends a new item to the list at each iteration 
+ * Each iteration grows by one
+ */
 void mode2(){
+  //Create new sequence
   addStack2();
-//  readQueue();
-//  buttonPressCheck();
-//
-//  while(checkFlag == true){
-//    answer();
-//  }
-//  roundScore++;
-//  printStack();
+
+  //Check if input is right or wrong
+  buttonPressCheck();
+
+  //If correct pattern was entered, continue and grow by 1
+  while(checkFlag == true){
+    answer();
+  }
+  
+  roundScore++;
 }
 
 
+/**
+ * Creates an array with a random sequence
+ * Each time it appends a new number to the existing list
+ */
 void addStack2(){
   int myRandom = random(1,5);
-  int arraySize = (sizeof(myArray)/sizeof(int));
-
-  Serial.println(arraySize);
+  queue.push_back(myRandom);
+  blinkQueue();
+  checkFlag = true;
   
-//  for(i = 0; i < sizeof(myArray)/sizeof(int)); i++){
-//    
-//  }
-//  
-//  
-//  queue.push(myRandom);
-//  checkFlag = true;
-}
-
-void printStack(){
-
-//  copy(queue, myCopy, queue.count());
-   
-  for(int x = 0; x < myCopy.count(); x++){
-    Serial.print(myCopy.pop());
-    Serial.print(" ");
-  }
-
-  Serial.println(" ");
-  delay(1000);
-}
-
-void printQueueCount(){
-  Serial.print("queue count = ");
-  Serial.println(queue.count());
-}
-
-void copy(int* src, int* dst, int len) {
-    memcpy(dst, src, sizeof(src[0])*len);
+  //printQueue();
 }

@@ -1,3 +1,6 @@
+#include "QList.h"
+#include <EEPROM.h>
+
 #define PIEZO 2
 
 #define LIGHT_1 3    //Red
@@ -16,21 +19,23 @@
 #define PITCH_4 1000  //Green
 #define FAIL_SOUND 250
 
-#include <QueueArray.h>
-QueueArray <int> queue;
-QueueArray <int> myCopy;
-QueueArray <int> Rstack; //read stack
+QList <int> queue;
 
 int delayTime = 375;
-int MAX_ARRAY = 50;
-int myArray[50];
 int roundScore = 1; //How many iterations made
-int myCount = 0;    //Used for Stack Length
-int input = 0; 
+int input = 0;
 float mySpeed = 2;
-bool checkFlag = false;
+bool checkFlag = false; //Check flag determines if a new item was added and we need to check the input
+bool modeReset = true;
+bool soundMode;
+int gameMode;
 void(* resetFunc) (void) = 0; //Reset function
 int lightArray[] = {LIGHT_1, LIGHT_2, LIGHT_3, LIGHT_4};
+
+//EEprom variables
+int addr1 = 0;
+int addr2 = 4;
+
 
 void setup() {
   pinMode(LIGHT_1, OUTPUT);
@@ -44,15 +49,22 @@ void setup() {
   pinMode(BUTTON_4, INPUT);
   
   Serial.begin(9600);
-  Serial.println("Starting....");
+  Serial.println("\nStarting....");
   randomSeed(analogRead(0));
 
-//  startLights();
-//  delay(750);
+  startupInput();
+  read_eeprom();
+  
+  runAnimation();
 }
 
 
 void loop(){
-  //mode1();
-  mode2();
+  if(gameMode == 1){
+    mode1();
+  }
+  
+  if(gameMode == 2){
+    mode2();
+  }  
 }
